@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pembuat Prompt Gambar By Mank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background color */
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Shadow */
+        }
+        .input-group label {
+            font-weight: 600; /* Bold */
+            color: #374151; /* Dark text color */
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .input-group select,
+        .input-group input[type="text"],
+        .input-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* Gray border color */
+            border-radius: 0.5rem; /* Rounded corners */
+            background-color: #f9fafb; /* Lighter input background */
+            color: #1f2937; /* Input text color */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .input-group select:focus,
+        .input-group input[type="text"]:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #4f46e5; /* Purple focus border color */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* Focus shadow */
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* Primary button color purple */
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* Darker purple on hover */
+            transform: translateY(-1px); /* Slightly lift effect */
+        }
+        .btn-copy {
+            background-color: #10b981; /* Copy button color green */
+            color: #ffffff;
+        }
+        .btn-copy:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-1px);
+        }
+        .prompt-output {
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 100px;
+            font-size: 0.9rem;
+            color: #1f2937;
+            white-space: pre-wrap; /* Preserve spaces and new lines */
+            word-break: break-word; /* Break long words */
+        }
+        .copy-message {
+            color: #10b981;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .copy-message.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Aplikasi Pembuat Prompt Gambar By Mank</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Negara Karakter -->
+            <div class="input-group">
+                <label for="characterCountry" class="block text-sm font-medium text-gray-700">Negara Karakter:</label>
+                <select id="characterCountry" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Negara</option>
+                    <option value="Jepang">Jepang</option>
+                    <option value="Korea">Korea</option>
+                    <option value="China">China</option>
+                    <option value="Amerika">Amerika</option>
+                    <option value="Eropa">Eropa</option>
+                    <option value="India">India</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Afrika">Afrika</option>
+                    <option value="Timur Tengah">Timur Tengah</option>
+                </select>
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div class="input-group">
+                <label for="gender" class="block text-sm font-medium text-gray-700">Jenis Kelamin:</label>
+                <select id="gender" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Jenis Kelamin</option>
+                    <option value="Pria">Pria</option>
+                    <option value="Wanita">Wanita</option>
+                    <option value="Androgini">Androgini</option>
+                </select>
+            </div>
+
+            <!-- Pakaian (Manual) -->
+            <div class="input-group">
+                <label for="clothing" class="block text-sm font-medium text-gray-700">Pakaian (Deskripsi Manual):</label>
+                <input type="text" id="clothing" placeholder="Contoh: Gaun tradisional, jaket kulit, seragam sekolah" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            </div>
+
+            <!-- Aksi -->
+            <div class="input-group">
+                <label for="action" class="block text-sm font-medium text-gray-700">Aksi:</label>
+                <select id="action" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Aksi</option>
+                    <option value="Berjalan">Berjalan</option>
+                    <option value="Berlari">Berlari</option>
+                    <option value="Duduk">Duduk</option>
+                    <option value="Berdiri">Berdiri</option>
+                    <option value="Melompat">Melompat</option>
+                    <option value="Menari">Menari</option>
+                    <option value="Makan">Makan</option>
+                    <option value="Tidur">Tidur</option>
+                    <option value="Berpikir">Berpikir</option>
+                    <option value="Berbicara">Berbicara</option>
+                    <option value="Bertarung">Bertarung</option>
+                    <option value="Memasak">Memasak</option>
+                    <option value="Membaca">Membaca</option>
+                    <option value="Menulis">Menulis</option>
+                    <option value="Bermain">Bermain</option>
+                </select>
+            </div>
+
+            <!-- Deskripsi Manual -->
+            <div class="input-group">
+                <label for="manualDescription" class="block text-sm font-medium text-gray-700">Deskripsi Manual (Opsional):</label>
+                <textarea id="manualDescription" rows="2" placeholder="Tambahkan detail spesifik tentang karakter, objek, atau adegan." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+            </div>
+
+            <!-- Waktu -->
+            <div class="input-group">
+                <label for="time" class="block text-sm font-medium text-gray-700">Waktu:</label>
+                <select id="time" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Waktu</option>
+                    <option value="Pagi">Pagi</option>
+                    <option value="Siang">Siang</option>
+                    <option value="Sore">Sore</option>
+                    <option value="Malam">Malam</option>
+                    <option value="Fajar">Fajar</option>
+                    <option value="Senja">Senja</option>
+                </select>
+            </div>
+
+            <!-- Efek Kamera -->
+            <div class="input-group">
+                <label for="cameraEffect" class="block text-sm font-medium text-gray-700">Efek Kamera:</label>
+                <select id="cameraEffect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Efek Kamera</option>
+                    <option value="Close-up">Close-up</option>
+                    <option value="Full Shot">Full Shot</option>
+                    <option value="Wide Angle">Wide Angle</option>
+                    <option value="Depth of Field">Depth of Field</option>
+                    <option value="Bokeh">Bokeh</option>
+                    <option value="Golden Hour">Golden Hour</option>
+                    <option value="Low Angle">Low Angle</option>
+                    <option value="High Angle">High Angle</option>
+                    <option value="Tilt-Shift">Tilt-Shift</option>
+                    <option value="Makro">Makro</option>
+                    <option value="Sinematik">Sinematik</option>
+                </select>
+            </div>
+
+            <!-- Suasana -->
+            <div class="input-group">
+                <label for="mood" class="block text-sm font-medium text-gray-700">Suasana:</label>
+                <select id="mood" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Suasana</option>
+                    <option value="Bahagia">Bahagia</option>
+                    <option value="Sedih">Sedih</option>
+                    <option value="Misterius">Misterius</option>
+                    <option value="Tegang">Tegang</option>
+                    <option value="Damai">Damai</option>
+                    <option value="Enerjik">Enerjik</option>
+                    <option value="Romantis">Romantis</option>
+                    <option value="Horor">Horor</option>
+                    <option value="Komedi">Komedi</option>
+                    <option value="Epik">Epik</option>
+                    <option value="Melankolis">Melankolis</option>
+                </select>
+            </div>
+
+            <!-- Lokasi -->
+            <div class="input-group">
+                <label for="location" class="block text-sm font-medium text-gray-700">Lokasi:</label>
+                <select id="location" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Lokasi</option>
+                    <option value="Hutan">Hutan</option>
+                    <option value="Kota">Kota</option>
+                    <option value="Pegunungan">Pegunungan</option>
+                    <option value="Pantai">Pantai</option>
+                    <option value="Ruang Angkasa">Ruang Angkasa</option>
+                    <option value="Bawah Laut">Bawah Laut</option>
+                    <option value="Kastil">Kastil</option>
+                    <option value="Laboratorium">Laboratorium</option>
+                    <option value="Pedesaan">Pedesaan</option>
+                    <option value="Gurun">Gurun</option>
+                    <option value="Kutub">Kutub</option>
+                    <option value="Rumah">Rumah</option>
+                    <option value="Sekolah">Sekolah</option>
+                </select>
+            </div>
+
+            <!-- Deskripsi Lokasi -->
+            <div class="input-group">
+                <label for="locationDescription" class="block text-sm font-medium text-gray-700">Deskripsi Lokasi (Opsional):</label>
+                <textarea id="locationDescription" rows="2" placeholder="Contoh: di tengah badai salju, di gang sempit yang gelap, di puncak gunung yang tertutup salju" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+            </div>
+
+            <!-- Rasio -->
+            <div class="input-group">
+                <label for="ratio" class="block text-sm font-medium text-gray-700">Rasio:</label>
+                <select id="ratio" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">Pilih Rasio</option>
+                    <option value="1:1">1:1 (Persegi)</option>
+                    <option value="16:9">16:9 (Layar Lebar)</option>
+                    <option value="9:16">9:16 (Potret Vertikal)</option>
+                    <option value="4:3">4:3 (Standar)</option>
+                    <option value="3:2">3:2 (Fotografi)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex justify-center mb-8">
+            <button id="generatePromptBtn" class="btn btn-primary">Buat Prompt</button>
+        </div>
+
+        <!-- Hasil Prompt -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Hasil Prompt:</h2>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Prompt Bahasa Indonesia:</label>
+                <div id="promptId" class="prompt-output"></div>
+                <button id="copyIdBtn" class="btn btn-copy mt-2">Salin Prompt Indonesia</button>
+                <span id="copyIdMessage" class="copy-message">Disalin!</span>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Prompt Bahasa Inggris:</label>
+                <div id="promptEn" class="prompt-output"></div>
+                <button id="copyEnBtn" class="btn btn-copy mt-2">Salin Prompt Inggris</button>
+                <span id="copyEnMessage" class="copy-message">Disalin!</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to copy text to clipboard
+        function copyToClipboard(elementId, messageId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            if (textToCopy) {
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                const message = document.getElementById(messageId);
+                message.classList.add('show');
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        // Event listener for the "Generate Prompt" button
+        document.getElementById('generatePromptBtn').addEventListener('click', () => {
+            const characterCountry = document.getElementById('characterCountry').value;
+            const gender = document.getElementById('gender').value;
+            const clothing = document.getElementById('clothing').value;
+            const action = document.getElementById('action').value;
+            const manualDescription = document.getElementById('manualDescription').value;
+            const time = document.getElementById('time').value;
+            const cameraEffect = document.getElementById('cameraEffect').value;
+            const mood = document.getElementById('mood').value;
+            const location = document.getElementById('location').value;
+            const locationDescription = document.getElementById('locationDescription').value;
+            const ratio = document.getElementById('ratio').value;
+
+            // Build prompt in Indonesian
+            let promptIdParts = ["Gambar"];
+            let characterPrefixId = "seorang";
+
+            if (gender === "Pria") {
+                characterPrefixId = "seorang pria";
+            } else if (gender === "Wanita") {
+                characterPrefixId = "seorang wanita";
+            } else if (gender === "Androgini") {
+                characterPrefixId = "seorang karakter androgini";
+            }
+
+            if (characterCountry) {
+                promptIdParts.push(`${characterPrefixId} dari ${characterCountry}`);
+            } else {
+                promptIdParts.push(characterPrefixId);
+            }
+
+            if (clothing) {
+                promptIdParts.push(`mengenakan ${clothing}`);
+            }
+
+            if (action) {
+                promptIdParts.push(`${action}`);
+            }
+
+            if (manualDescription) {
+                promptIdParts.push(`${manualDescription}`);
+            }
+
+            if (time) {
+                promptIdParts.push(`pada ${time}`);
+            }
+
+            if (cameraEffect) {
+                promptIdParts.push(`efek kamera ${cameraEffect}`);
+            }
+
+            if (mood) {
+                promptIdParts.push(`suasana ${mood}`);
+            }
+
+            if (location) {
+                let locationString = `di ${location}`;
+                if (locationDescription) {
+                    locationString += `, ${locationDescription}`;
+                }
+                promptIdParts.push(locationString);
+            } else if (locationDescription) {
+                promptIdParts.push(`di lokasi ${locationDescription}`);
+            }
+
+            let promptId = promptIdParts.join(", ");
+            // Clean up leading "Gambar, " if only "Gambar" was the first part
+            if (promptId.startsWith("Gambar, ")) {
+                promptId = promptId.replace("Gambar, ", "Gambar ");
+            }
+
+            // Ensure proper punctuation
+            if (promptId.endsWith(', ')) {
+                promptId = promptId.slice(0, -2); // Remove trailing ", "
+            }
+            if (!promptId.endsWith('.')) {
+                promptId += '.';
+            }
+
+            if (ratio) {
+                promptId += ` Rasio: ${ratio}.`;
+            }
+
+
+            // Build prompt in English (simple translation)
+            let promptEnParts = ["An image of"];
+            let characterPrefixEn = "a";
+
+            if (gender === "Pria") {
+                characterPrefixEn = "a male";
+            } else if (gender === "Wanita") {
+                characterPrefixEn = "a female";
+            } else if (gender === "Androgini") {
+                characterPrefixEn = "an androgynous character";
+            }
+
+            const countryMap = {
+                "Jepang": "Japanese", "Korea": "Korean", "China": "Chinese", "Amerika": "American",
+                "Eropa": "European", "India": "Indian", "Indonesia": "Indonesian", "Afrika": "African",
+                "Timur Tengah": "Middle Eastern"
+            };
+            if (characterCountry) {
+                promptEnParts.push(`${characterPrefixEn} character from ${countryMap[characterCountry] || characterCountry}`);
+            } else {
+                promptEnParts.push(characterPrefixEn + " character");
+            }
+
+            if (clothing) {
+                promptEnParts.push(`wearing ${clothing}`);
+            }
+
+            const actionMap = {
+                "Berjalan": "walking", "Berlari": "running", "Duduk": "sitting", "Berdiri": "standing",
+                "Melompat": "jumping", "Menari": "dancing", "Makan": "eating", "Tidur": "sleeping",
+                "Berpikir": "thinking", "Berbicara": "talking", "Bertarung": "fighting", "Memasak": "cooking",
+                "Membaca": "reading", "Menulis": "writing", "Bermain": "playing"
+            };
+            if (action) {
+                promptEnParts.push(`${actionMap[action] || action}`);
+            }
+
+            if (manualDescription) {
+                promptEnParts.push(`${manualDescription}`);
+            }
+
+            const timeMap = {
+                "Pagi": "morning", "Siang": "day", "Sore": "afternoon", "Malam": "night",
+                "Fajar": "dawn", "Senja": "dusk"
+            };
+            if (time) {
+                promptEnParts.push(`in the ${timeMap[time] || time}`);
+            }
+
+            const cameraEffectMap = {
+                "Close-up": "close-up shot", "Full Shot": "full shot", "Wide Angle": "wide angle",
+                "Depth of Field": "depth of field", "Bokeh": "bokeh effect", "Golden Hour": "golden hour lighting",
+                "Low Angle": "low angle shot", "High Angle": "high angle shot", "Tilt-Shift": "tilt-shift effect",
+                "Makro": "macro shot", "Sinematik": "cinematic shot"
+            };
+            if (cameraEffect) {
+                promptEnParts.push(`with a ${cameraEffectMap[cameraEffect] || cameraEffect}`);
+            }
+
+            const moodMap = {
+                "Bahagia": "happy mood", "Sedih": "sad mood", "Misterius": "mysterious mood",
+                "Tegang": "tense mood", "Damai": "peaceful mood", "Enerjik": "energetic mood",
+                "Romantis": "romantic mood", "Horor": "horror mood", "Komedi": "comedy mood",
+                "Epik": "epic mood", "Melankolis": "melancholy mood"
+            };
+            if (mood) {
+                promptEnParts.push(`in a ${moodMap[mood] || mood}`);
+            }
+
+            const locationMap = {
+                "Hutan": "forest", "Kota": "city", "Pegunungan": "mountains", "Pantai": "beach",
+                "Ruang Angkasa": "outer space", "Bawah Laut": "underwater", "Kastil": "castle",
+                "Laboratorium": "laboratory", "Pedesaan": "countryside", "Gurun": "desert",
+                "Kutub": "polar region", "Rumah": "house", "Sekolah": "school"
+            };
+            if (location) {
+                let locationStringEn = `located in a ${locationMap[location] || location}`;
+                if (locationDescription) {
+                    locationStringEn += `, ${locationDescription}`;
+                }
+                promptEnParts.push(locationStringEn);
+            } else if (locationDescription) {
+                promptEnParts.push(`located in a scene ${locationDescription}`);
+            }
+
+            let promptEn = promptEnParts.join(", ");
+            // Clean up leading "An image of, " if only "An image of" was the first part
+            if (promptEn.startsWith("An image of, ")) {
+                promptEn = promptEn.replace("An image of, ", "An image of ");
+            }
+
+            // Ensure proper punctuation
+            if (promptEn.endsWith(', ')) {
+                promptEn = promptEn.slice(0, -2); // Remove trailing ", "
+            }
+            if (!promptEn.endsWith('.')) {
+                promptEn += '.';
+            }
+
+            if (ratio) {
+                promptEn += ` Aspect ratio: ${ratio}.`;
+            }
+
+            document.getElementById('promptId').innerText = promptId;
+            document.getElementById('promptEn').innerText = promptEn;
+        });
+
+        // Event listener for "Copy Indonesian Prompt" button
+        document.getElementById('copyIdBtn').addEventListener('click', () => {
+            copyToClipboard('promptId', 'copyIdMessage');
+        });
+
+        // Event listener for "Copy English Prompt" button
+        document.getElementById('copyEnBtn').addEventListener('click', () => {
+            copyToClipboard('promptEn', 'copyEnMessage');
+        });
+    </script>
+</body>
+</html>
